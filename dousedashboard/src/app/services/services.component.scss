@@ -1,0 +1,110 @@
+.category {
+  margin: 10px 0;
+  border: 1px solid black;
+  cursor: pointer;
+  user-select: none;
+
+  &.selected {
+    box-shadow: 1px 1px 0 0 #555;
+  }
+
+  .category-name {
+    padding: 20px 10px;
+    flex: 1;
+  }
+}
+
+.column {
+  margin: 0 10px 0 0px;
+  min-width: 400px;
+}
+
+.edit {
+  width: 20px;
+  height: 20px;
+}
+
+.edit-button {
+  cursor: pointer;
+  padding: 5px;
+}
+
+.option-edit {
+  min-width: 5px;
+  margin: 5px;
+}
+
+.edit-block {
+  padding: 10px 10px 0;
+  box-sizing: border-box;
+  min-width: 400px;
+
+  textarea {
+    width: 97%;
+    min-height: 300px;
+  }
+
+  textarea,
+  input {
+    padding: 5px;
+    font-size: 16px;
+    margin: 3px 0 10px;
+  }
+}
+
+.mat-ok {
+  background-color: #4caf50;
+  color: white;
+}
+
+.modal-background {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  background-color: #ccc;
+  opacity: 0;
+  user-select: none;
+  pointer-events: none;
+  transition: opacity 0.2s linear;
+
+  &.show {
+    transition: opacity 0.2s linear;
+    opacity: 0.4;
+  }
+}
+
+.modal {
+  position: fixed;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 10px;
+  margin: auto;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  background-color: white;
+  box-shadow: 1px 1px 0 0 #999;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s linear;
+
+  &.show {
+    transition: opacity 0.2s linear;
+    pointer-events: all;
+    opacity: 1;
+  }
+
+  .question {
+    margin-bottom: 5px;
+  }
+
+  button {
+    &:first-child {
+      margin-right: 5px;
+    }
+  }
+}

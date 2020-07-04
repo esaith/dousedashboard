@@ -1,0 +1,82 @@
+<app-nav></app-nav>
+<div class='flex align-top'>
+  <div class='column'>
+    <button mat-raised-button color="primary" (click)="newCategory()">Create Category</button>
+    <div *ngFor="let category of categories; let i = index" class="category"
+      [class.selected]='selectedCategory?.Id === category.Id'>
+      <div class='flex align-center justify-between'>
+        <div class='category-name' (click)='selectCategory(category)'>{{category.Name}}</div>
+        <div *ngIf='!category.editing'>
+          <button mat-raised-button color="primary" class='option-edit' (click)='editName(category)'>Edit</button>
+          <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteCategory(i)'>Del</button>
+        </div>
+        <div *ngIf='category.editing' class='flex align-center'>
+          <button mat-raised-button color="ok" class='option-edit' (click)='saveName(category)'>A</button>
+          <button mat-raised-button color="warn" class='option-edit' (click)='exitName(category)'>X</button>
+        </div>
+      </div>
+      <div class='edit-block' *ngIf='category.editing'>
+        <div class='title'>Title</div>
+        <input type='text' [(ngModel)]='category.Name' />
+        <div class='title'>Short Title</div>
+        <input type='text' [(ngModel)]='category.ShortName' />
+      </div>
+    </div>
+  </div>
+  <div class='column' *ngIf='selectedCategory'>
+    <button mat-raised-button color="primary" (click)="newService()">Create Service</button>
+    <div *ngFor="let service of selectedCategory.Services; let i = index" class="category"
+      [class.selected]='selectedService?.Id === service.Id'>
+      <div class='flex align-center justify-between'>
+        <div class='category-name' (click)='selectService(service)'>{{service.Name}}</div>
+        <div *ngIf='!service.editing'>
+          <button mat-raised-button color="primary" class='option-edit' (click)='editName(service)'>Edit</button>
+          <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteService(i)'>Del</button>
+        </div>
+        <div *ngIf='service.editing' class='flex align-center'>
+          <button mat-raised-button color="ok" class='option-edit' (click)='saveName(service)'>A</button>
+          <button mat-raised-button color="warn" class='option-edit' (click)='exitName(service)'>X</button>
+        </div>
+      </div>
+      <div class='edit-block' *ngIf='service.editing'>
+        <div class='title'>Title</div>
+        <input type='text' [(ngModel)]='service.Name' />
+        <div class='title'>Description</div>
+        <textarea [(ngModel)]='service.Description'></textarea>
+      </div>
+    </div>
+  </div>
+  <div class='column' *ngIf='selectedService'>
+    <button mat-raised-button color="primary" (click)="newServiceOption()">Create Service Option</button>
+    <div *ngFor="let option of selectedService.ServiceOptions; let i = index" class="category"
+      [class.selected]='selectedServiceOption?.Id === option.Id'>
+      <div class='flex align-center justify-between'>
+        <div class='category-name'>{{option.Name}}</div>
+        <div *ngIf='!option.editing'>
+          <button mat-raised-button color="primary" class='option-edit' (click)='editOption(option)'>Edit</button>
+          <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteServiceOption(i)'>Del</button>
+        </div>
+        <div *ngIf='option.editing' class='flex align-center'>
+          <button mat-raised-button color="ok" class='option-edit' (click)='saveName(option)'>A</button>
+          <button mat-raised-button color="warn" class='option-edit' (click)='exitName(option)'>X</button>
+        </div>
+      </div>
+      <div class='edit-block' *ngIf='option.editing'>
+        <div class='title'>Title</div>
+        <input type='text' [(ngModel)]='option.Name' />
+        <div class='title'>Description</div>
+        <textarea [(ngModel)]='option.Description'></textarea>
+        <div>Footer</div>
+        <textarea [(ngModel)]='option.Footer'></textarea>
+      </div>
+    </div>
+  </div>
+  <div class='modal-background' [class.show]='showingDeleteModal'></div>
+  <div class='modal' [class.show]='showingDeleteModal'>
+    <div class='question'>Are you sure to delete?</div>
+    <div class='flex align-center'>
+      <button mat-raised-button color="warn" (click)='cancelModal()'>No</button>
+      <button mat-raised-button color="primary" (click)='delete()'>Yes</button>
+    </div>
+  </div>
+</div>
