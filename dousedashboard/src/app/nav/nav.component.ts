@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
+// TODO, make nav a vertical left side bar that can expand/collapse
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
@@ -9,23 +10,26 @@ import { Location } from '@angular/common';
 })
 export class NavComponent implements OnInit {
   path: string;
+  changePath = new EventEmitter();
+  businessId = 0;
 
-  constructor(private router: Router, private location: Location) { }
+  constructor(private router: Router, private location: Location, private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.path = this.location.path().replace('/', '');
+    this.businessId = parseInt(this.route.snapshot.paramMap.get('id'), 10);
+    this.path = this.location.path().replace(/\//g, '').replace(/\d/g, '');
     if (!this.path) {
-      this.path = 'services';
+      this.router.navigate([`services/${this.businessId}`]);
     }
-
   }
 
   modifyServices() {
-    this.router.navigate(['services']);
+    this.changePath.emit();
+    this.router.navigate([`services/${this.businessId}`]);
   }
 
   modifyBusiness() {
-    this.router.navigate(['business']);
+    this.changePath.emit();
+    this.router.navigate([`business/${this.businessId}`]);
   }
-
 }

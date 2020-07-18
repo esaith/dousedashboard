@@ -1,4 +1,53 @@
-<app-nav></app-nav>
-<p>
-  business works!
-</p>
+<app-nav (changePath)="save()"></app-nav>
+<button mat-raised-button color="primary" (click)="save()" class='save'>Save</button>
+
+<div class='prop'>Name</div>
+<input type='text' name='name' [(ngModel)]='business.Name' required />
+
+<div class='prop'>Street Address</div>
+<input type='text' [(ngModel)]='business.Address' />
+
+<div class='prop'>City</div>
+<input type='text' [(ngModel)]='business.City' />
+
+<div class='prop'>State</div>
+<input type='text' [(ngModel)]='business.State' />
+
+<div class='prop'>Zip</div>
+<input type='text' [(ngModel)]='business.Zip' />
+
+<div class='prop'>Phone</div>
+<input type='text' [(ngModel)]='business.Phone' />
+
+<div class='prop'>Instagram Link</div>
+<input type='text' [(ngModel)]='business.Instagram' />
+
+<div class='prop'>Instagram Title</div>
+<input type='text' [(ngModel)]='business.InstagramTitle' />
+
+<div class='prop'>Facebook</div>
+<input type='text' [(ngModel)]='business.Facebook' />
+
+<div class='prop'>Facebook Title</div>
+<input type='text' [(ngModel)]='business.FacebookTitle' />
+
+<div class='prop'>Hours</div>
+<textarea type='text' [(ngModel)]='business.Hours'></textarea>
+
+<div class='prop'>iOS Map Link</div>
+<input type='text' [(ngModel)]='business.iosMap' />
+
+<div class='prop'>Google Map Link</div>
+<input type='text' [(ngModel)]='business.googleMap' />
+
+<div class='prop'>Book Now Link</div>
+<input type='text' [(ngModel)]='business.BookNow' />
+
+<div class='prop'>Logo</div>
+<input type='file' accept="image/*" (change)="uploadImage($event, 'logo')" />
+<img *ngIf='homeLogo' [src]="homeLogo" class="image" />
+
+
+<div class='prop'>Owner Image</div>
+<input type='file' accept="image/*" (change)="uploadImage($event, 'owner')" />
+<img *ngIf='ownerImage' [src]="ownerImage" class="image" />

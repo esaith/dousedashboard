@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ServiceCategoryVM, ServiceOptionVM, ServicesVM } from '../entities/service-category';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-services',
@@ -19,8 +20,9 @@ export class ServicesComponent implements OnInit {
   selectedCategory: ServiceCategoryVM;
   selectedService: ServicesVM;
   selectedServiceOption: ServiceOptionVM;
+  image: SafeUrl;
 
-  constructor() { }
+  constructor(public sanitizer: DomSanitizer) { }
 
   ngOnInit() {
     const category = new ServiceCategoryVM();
@@ -111,6 +113,20 @@ export class ServicesComponent implements OnInit {
   verifyDeleteServiceOption(index: number) {
     this.showingDeleteModal = true;
     this.deleteServiceOptionIndex = index;
+  }
+
+  uploadImage(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      const file: File = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = e => {
+        const blob = window.URL.createObjectURL(file);
+        this.image = this.sanitizer.bypassSecurityTrustUrl(blob);
+        this.selectedService.Image = blob;
+      };
+
+      reader.readAsDataURL(file);
+    }
   }
 
   delete() {
