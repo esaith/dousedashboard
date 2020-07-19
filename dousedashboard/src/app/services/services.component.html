@@ -29,7 +29,7 @@
     <div *ngFor="let service of selectedCategory.Services; let i = index" class="category"
       [class.selected]='selectedService?.Id === service.Id'>
       <div class='flex align-center justify-between'>
-        <div class='category-name' (click)='selectService(service)'>{{service.Name}}</div>
+        <div class='category-name' (click)='selectService(service)'>{{service.Title}}</div>
         <div *ngIf='!service.editing'>
           <button mat-raised-button color="primary" class='option-edit' (click)='editName(service)'>Edit</button>
           <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteService(i)'>Del</button>
@@ -41,7 +41,7 @@
       </div>
       <div class='edit-block' *ngIf='service.editing'>
         <div class='title'>Title</div>
-        <input type='text' [(ngModel)]='service.Name' />
+        <input type='text' [(ngModel)]='service.Title' />
         <div class='title'>Description</div>
         <textarea [(ngModel)]='service.Description'></textarea>
         <div>Image</div>
@@ -56,7 +56,7 @@
     <div *ngFor="let option of selectedService.ServiceOptions; let i = index" class="category"
       [class.selected]='selectedServiceOption?.Id === option.Id'>
       <div class='flex align-center justify-between'>
-        <div class='category-name'>{{option.Name}}</div>
+        <div class='category-name'>{{option.Title}}</div>
         <div *ngIf='!option.editing'>
           <button mat-raised-button color="primary" class='option-edit' (click)='editOption(option)'>Edit</button>
           <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteServiceOption(i)'>Del</button>
@@ -68,7 +68,7 @@
       </div>
       <div class='edit-block' *ngIf='option.editing'>
         <div class='title'>Title</div>
-        <input type='text' [(ngModel)]='option.Name' />
+        <input type='text' [(ngModel)]='option.Title' />
         <div class='title'>Description</div>
         <textarea [(ngModel)]='option.Description'></textarea>
         <div>Footer</div>

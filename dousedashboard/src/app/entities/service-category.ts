@@ -25,7 +25,6 @@ export class ServiceCategoryVM implements IServiceCategory {
 export interface IServices {
     Id: number;
     ServiceCategoryId: number;
-    Name: string;
     Image: string;
     Title: string;
     Description: string;
@@ -36,7 +35,6 @@ export interface IServices {
 export class ServicesVM implements IServices {
     Id: number;
     ServiceCategoryId: number;
-    Name: string;
     Image: string;
     Title: string;
     Description: string;
@@ -50,7 +48,7 @@ export class ServicesVM implements IServices {
 export interface IServiceOption {
     Id: number;
     ServicesId: number;
-    Name: string;
+    Title: string;
     Description: string;
     Footer: string;
 }
@@ -58,7 +56,7 @@ export interface IServiceOption {
 export class ServiceOptionVM implements IServiceOption {
     Id: number;
     ServicesId: number;
-    Name: string;
+    Title: string;
     Description: string;
     Footer: string;
 

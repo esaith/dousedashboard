@@ -1,12 +1,12 @@
-import { Component, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { BusinessVM } from '../entities/business';
+import { Component, OnInit } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { BusinessService } from '../entities/business.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
+import { BusinessService } from '../entities/business.service';
+import { BusinessVM } from '../entities/business';
 
 @Component({
   selector: 'app-business',
@@ -22,13 +22,13 @@ export class BusinessComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private businessService: BusinessService,
     private route: ActivatedRoute,
-    private changeRef: ChangeDetectorRef,
     private snackBar: MatSnackBar
-  ) { }
+  ) {
+    this.snackBar.open('Contacting server ...');
+  }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    this.snackBar.open('Contacting server ...');
 
     this.businessService.get(id)
       .pipe(

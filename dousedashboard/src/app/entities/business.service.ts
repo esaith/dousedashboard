@@ -4,25 +4,25 @@ import { Observable, of } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 
 import { BusinessVM, IBusiness } from './business';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
     providedIn: 'root',
 })
 export class BusinessService {
     business: BusinessVM;
-    api = 'https://localhost:44365/api/business';
     constructor(private http: HttpClient) { }
 
     save(business: BusinessVM): Observable<BusinessVM> {
         this.business = business;
-        return this.http.put<BusinessVM>(`${this.api}/${this.business.Id}`, this.convertToDTO(this.business));
+        return this.http.put<BusinessVM>(`${environment.api}/business/${this.business.Id}`, this.convertToDTO(this.business));
     }
 
     get(id: string | number): Observable<BusinessVM> {
         if (this.business) {
             return of(this.business);
         } else {
-            return this.http.get(`${this.api}/${id}`).pipe(
+            return this.http.get(`${environment.api}/business/${id}`).pipe(
                 flatMap((business: IBusiness) => {
                     this.business = business;
                     return of(this.business);
