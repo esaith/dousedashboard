@@ -25,6 +25,7 @@ export class BusinessService {
             return this.http.get(`${environment.api}/business/${id}`).pipe(
                 flatMap((business: IBusiness) => {
                     this.business = business;
+                    this.business.Hours = this.removeHtmlBreak(this.business.Hours);
                     return of(this.business);
                 })
             );
@@ -45,11 +46,21 @@ export class BusinessService {
             Facebook: business.Facebook,
             FacebookTitle: business.FacebookTitle,
             EmployeeImg: business.EmployeeImg,
-            Hours: business.Hours,
+            Hours: this.addHtmlBreak(business.Hours),
             HomeLogo: business.HomeLogo,
             IosMap: business.IosMap,
             GoogleMap: business.GoogleMap,
             BookNow: business.BookNow
         };
+    }
+
+    addHtmlBreak(val: string): string {
+        if (!val) { return val; }
+        return val.replace(/\n/g, '<br />').trim();
+    }
+
+    removeHtmlBreak(val: string): string {
+        if (!val) { return val; }
+        return val.replace(/<br \/>/g, '\n');
     }
 }

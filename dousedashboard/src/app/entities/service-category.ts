@@ -25,7 +25,7 @@ export class ServiceCategoryVM implements IServiceCategory {
 export interface IServices {
     Id: number;
     ServiceCategoryId: number;
-    Image: string;
+    ImageUrl: string;
     Title: string;
     Description: string;
 
@@ -35,7 +35,7 @@ export interface IServices {
 export class ServicesVM implements IServices {
     Id: number;
     ServiceCategoryId: number;
-    Image: string;
+    ImageUrl: string;
     Title: string;
     Description: string;
 

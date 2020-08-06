@@ -6,6 +6,7 @@
 
   &.selected {
     box-shadow: 1px 1px 0 0 #555;
+    background-color: #f1f1f1;
   }
 
   .category-name {
@@ -18,6 +19,10 @@
   position: fixed;
   top: 5px;
   right: 5px;
+}
+
+.image {
+  width: 400px;
 }
 
 .column {

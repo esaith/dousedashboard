@@ -31,7 +31,7 @@
       <div class='flex align-center justify-between'>
         <div class='category-name' (click)='selectService(service)'>{{service.Title}}</div>
         <div *ngIf='!service.editing'>
-          <button mat-raised-button color="primary" class='option-edit' (click)='editName(service)'>Edit</button>
+          <button mat-raised-button color="primary" class='option-edit' (click)='editService(service)'>Edit</button>
           <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteService(i)'>Del</button>
         </div>
         <div *ngIf='service.editing' class='flex align-center'>
@@ -45,11 +45,12 @@
         <div class='title'>Description</div>
         <textarea [(ngModel)]='service.Description'></textarea>
         <div>Image</div>
-        <input type='file' accept="image/*" (change)="uploadImage($event)" />
+        <input type='file' accept="image/*" (change)="uploadImage($event, service)" />
         <img *ngIf='image' [src]="image" class="image" />
         <div *ngIf='!image'>No Image Uploaded Yet</div>
       </div>
     </div>
+
   </div>
   <div class='column' *ngIf='selectedService'>
     <button mat-raised-button color="primary" (click)="newServiceOption()">Create Service Option</button>

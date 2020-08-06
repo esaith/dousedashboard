@@ -72,6 +72,11 @@ export class ServicesComponent implements OnInit {
 
   selectService(service: ServicesVM) {
     this.selectedService = service;
+    if (this.selectedService.ImageUrl) {
+      this.image = this.sanitizer.bypassSecurityTrustUrl(this.selectedService.ImageUrl);
+    } else {
+      this.image = null;
+    }
   }
 
   editName(item: ServiceCategoryVM | ServicesVM) {
@@ -86,6 +91,16 @@ export class ServicesComponent implements OnInit {
     }
 
     item.editing = true;
+  }
+
+  editService(service: ServicesVM) {
+    for (const s of this.selectedCategory.Services) {
+      s.editing = false;
+    }
+
+    service.editing = true;
+    this.selectedService = service;
+    this.image = this.sanitizer.bypassSecurityTrustUrl(service.ImageUrl);
   }
 
   saveName(item: ServiceCategoryVM | ServicesVM) {
@@ -117,17 +132,26 @@ export class ServicesComponent implements OnInit {
     this.deleteServiceOptionIndex = index;
   }
 
-  uploadImage(event: any) {
-    if (event.target.files && event.target.files.length > 0) {
-      const file: File = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = e => {
-        const blob = window.URL.createObjectURL(file);
-        this.image = this.sanitizer.bypassSecurityTrustUrl(blob);
-        this.selectedService.Image = blob;
-      };
+  uploadImage(event: any, service: ServicesVM) {
+    this.selectedService = service;
 
-      reader.readAsDataURL(file);
+    if (event.target.files && event.target.files.length > 0) {
+      if (event.target.files[0].size < 220000) {
+        const file: File = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = e => {
+          const blob = window.URL.createObjectURL(file);
+          this.selectedService.ImageUrl = e.target.result.toString();
+          this.image = this.sanitizer.bypassSecurityTrustUrl(e.target.result.toString());
+        };
+
+        reader.readAsDataURL(file);
+      } else {
+        this.snackBar.open('Image too large. Please make sure image is less than 200 KB (Preferably 100KB or less)', '',
+          {
+            duration: 5000
+          });
+      }
     }
   }
 
