@@ -1,0 +1,21 @@
+<app-nav></app-nav>
+<button mat-raised-button color="primary" (click)='createNewBlog()'>New</button>
+<button mat-raised-button color="primary" (click)='save()'>Save</button>
+<div *ngIf='newBlog'>
+  <div>New Blog</div>
+  <div class='prop'>Title</div>
+  <input type='text' [(ngModel)]='newBlog.Title' />
+
+  <div class='prop'>Subtitle</div>
+  <input type='text' [(ngModel)]='newBlog.Subtitle' />
+
+  <div class='prop'>Content</div>
+  <textarea type='text' [(ngModel)]='newBlog.Content'></textarea>
+</div>
+
+<div *ngFor='let blog of blogs' class='blog'>
+  <button mat-raised-button color="primary" (click)='editBlog(blog)'>Edit</button>
+  <div class='prop'>{{blog.Title}}</div>
+  <div class='prop'>{{blog.Subtitle}}</div>
+  <div class='prop'>{{blog.Content}}</div>
+</div>

@@ -50,7 +50,8 @@ export class BusinessService {
             HomeLogo: business.HomeLogo,
             IosMap: business.IosMap,
             GoogleMap: business.GoogleMap,
-            BookNow: business.BookNow
+            BookNow: business.BookNow,
+            Notification: business.Notification
         };
     }
 

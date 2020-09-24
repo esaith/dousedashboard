@@ -16,6 +16,7 @@ export interface IBusiness {
     IosMap: string;
     GoogleMap: string;
     BookNow: string;
+    Notification: string;
 }
 
 export class BusinessVM implements IBusiness {
@@ -36,4 +37,5 @@ export class BusinessVM implements IBusiness {
     IosMap: string;
     GoogleMap: string;
     BookNow: string;
+    Notification: string;
 }

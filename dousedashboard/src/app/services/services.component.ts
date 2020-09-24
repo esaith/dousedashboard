@@ -3,7 +3,11 @@ import { ServiceCategoryVM, ServiceOptionVM, ServicesVM } from '../entities/serv
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { ServiceCategoryService } from '../entities/serviceCategory.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { catchError, mergeMap } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
+import { SaveDialogComponent } from '../shared/save-dialog/save-dialog.component';
+import { of, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-services',
@@ -21,14 +25,18 @@ export class ServicesComponent implements OnInit {
 
   selectedCategory: ServiceCategoryVM;
   selectedService: ServicesVM;
-  selectedServiceOption: ServiceOptionVM;
+  selectedOption: ServiceOptionVM;
   image: SafeUrl;
+  backgroundImageUrl: '';
 
   constructor(
     public serviceCategoryService: ServiceCategoryService,
     public route: ActivatedRoute,
     public sanitizer: DomSanitizer,
-    private snackBar: MatSnackBar) {
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
+    private router: Router
+  ) {
     this.snackBar.open('Getting user data from the server ...');
   }
 
@@ -40,40 +48,38 @@ export class ServicesComponent implements OnInit {
         this.snackBar.dismiss();
       }, (error) => {
         this.snackBar.open('Unable to retrieve data from the server. Please try again later.', '', {
-          duration: 3000
+          panelClass: ['error-snackbar']
         });
       });
-
-    // this.mock();
   }
 
   newCategory() {
     const category = new ServiceCategoryVM();
-    category.Name = 'New Category ';
+    category.Name = 'New Category ' + (this.categories.length + 1);
     this.categories.push(category);
   }
 
   newService() {
     const service = new ServicesVM();
-    service.Title = 'My New Service';
+    service.Title = 'My New Service' + (this.selectedCategory.Services.length + 1);
     this.selectedCategory.Services.push(service);
   }
 
   newServiceOption() {
     const serviceOption = new ServiceOptionVM();
-    serviceOption.Title = 'Service Option';
+    serviceOption.Title = 'Service Option' + (this.selectedService.ServiceOptions.length + 1);
     this.selectedService.ServiceOptions.push(serviceOption);
   }
 
   selectCategory(category: ServiceCategoryVM) {
     this.selectedCategory = category;
     this.selectedService = null;
+    this.selectedOption = null;
   }
 
   selectService(service: ServicesVM) {
     this.selectedService = service;
     if (this.selectedService.ImageUrl) {
-      this.image = this.sanitizer.bypassSecurityTrustUrl(this.selectedService.ImageUrl);
     } else {
       this.image = null;
     }
@@ -100,21 +106,20 @@ export class ServicesComponent implements OnInit {
 
     service.editing = true;
     this.selectedService = service;
-    this.image = this.sanitizer.bypassSecurityTrustUrl(service.ImageUrl);
+
+    this.image = this.selectedService.ImageUrl;
   }
 
   saveName(item: ServiceCategoryVM | ServicesVM) {
     item.editing = false;
   }
 
-  exitName(item: ServiceCategoryVM | ServicesVM) {
-    item.editing = false;
-  }
-
-  editOption(option: ServiceOptionVM) {
+  editOption(index: number) {
     for (const opt of this.selectedService.ServiceOptions) {
-      opt.editing = opt.Id === option.Id;
+      opt.editing = false;
     }
+
+    this.selectedService.ServiceOptions[index].editing = true;
   }
 
   verifyDeleteCategory(index: number) {
@@ -142,7 +147,7 @@ export class ServicesComponent implements OnInit {
         reader.onload = e => {
           const blob = window.URL.createObjectURL(file);
           this.selectedService.ImageUrl = e.target.result.toString();
-          this.image = this.sanitizer.bypassSecurityTrustUrl(e.target.result.toString());
+          this.image = this.sanitizer.bypassSecurityTrustStyle(e.target.result.toString());
         };
 
         reader.readAsDataURL(file);
@@ -155,22 +160,68 @@ export class ServicesComponent implements OnInit {
     }
   }
 
-  save() {
+  async save() {
     this.snackBar.open('Saving...');
-    this.serviceCategoryService.save(this.categories, this.businessId).subscribe(() => {
-      this.snackBar.open('Saved to server', '', {
-        duration: 3000
-      });
+    this.categories = await this.sendSave().toPromise();
+    this.selectedCategory = null;
+    this.selectedService = null;
+    this.selectedOption = null;
+  }
+
+  sendSave(): Observable<ServiceCategoryVM[]> {
+    return this.serviceCategoryService.save(this.categories, this.businessId)
+      .pipe(
+        catchError(error => {
+          this.snackBar.open('Issue saving to the server', '', {
+            panelClass: ['error-snackbar']
+          });
+
+          return error;
+        }),
+        mergeMap((response: ServiceCategoryVM[]): Observable<ServiceCategoryVM[]> => {
+          if (response) {
+            this.snackBar.open('Saved to server', '', {
+              duration: 3000
+            });
+          }
+
+          return of(response);
+        })
+      );
+  }
+
+  beforeNavigate(pageToNavigate: string) {
+    const saveDialogRef = this.dialog.open(SaveDialogComponent);
+    saveDialogRef.afterClosed().subscribe(async result => {
+      if (result) {
+        await this.save();
+      }
+
+      this.router.navigate([`${pageToNavigate}/${this.businessId}`]);
     });
   }
 
   delete() {
-    if (this.deleteServiceIndex > -1) {
-      this.selectedCategory.Services.splice(this.deleteServiceIndex, 1);
-    } else if (this.deleteCategoryIndex > -1) {
-      this.categories.splice(this.deleteCategoryIndex, 1);
+    if (this.deleteCategoryIndex > -1) {
+      const deletedCategory = this.categories.splice(this.deleteCategoryIndex, 1)[0];
+
+      if (this.selectedCategory && deletedCategory && this.selectedCategory.Id === deletedCategory.Id) {
+        this.selectedCategory = null;
+        this.selectedService = null;
+        this.selectedOption = null;
+      }
+    } else if (this.deleteServiceIndex > -1) {
+      const deletedService = this.selectedCategory.Services.splice(this.deleteServiceIndex, 1)[0];
+
+      if (this.selectedService && this.selectedService.Id === deletedService.Id) {
+        this.selectedService = null;
+        this.selectedOption = null;
+      }
     } else if (this.deleteServiceOptionIndex > -1) {
-      this.selectedService.ServiceOptions.splice(this.deleteServiceOptionIndex, 1);
+      const deletedOption = this.selectedService.ServiceOptions.splice(this.deleteServiceOptionIndex, 1)[0];
+      if (this.selectedOption && this.selectedOption.Id === deletedOption.Id) {
+        this.selectedOption = null;
+      }
     }
 
     this.deleteCategoryIndex = -1;
@@ -178,10 +229,6 @@ export class ServicesComponent implements OnInit {
     this.deleteServiceOptionIndex = -1;
 
     this.showingDeleteModal = false;
-
-    this.selectedCategory = null;
-    this.selectedService = null;
-    this.selectedServiceOption = null;
   }
 
   cancelModal() {
@@ -206,6 +253,6 @@ export class ServicesComponent implements OnInit {
 
     this.selectedCategory = category;
     this.selectedService = service;
-    this.selectedServiceOption = serviceOption;
+    this.selectedOption = serviceOption;
   }
 }

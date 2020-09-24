@@ -19,8 +19,8 @@ import { flatMap } from 'rxjs/operators';
 export class ServiceCategoryService {
     constructor(private http: HttpClient) { }
 
-    save(serviceCategories: Array<ServiceCategoryVM>, businessId: number): Observable<ServiceCategoryVM> {
-        return this.http.put<ServiceCategoryVM>(`${environment.api}/services/business/${businessId}`,
+    save(serviceCategories: Array<ServiceCategoryVM>, businessId: number): Observable<ServiceCategoryVM[]> {
+        return this.http.put<ServiceCategoryVM[]>(`${environment.api}/services/business/${businessId}`,
             this.convertToDTO(serviceCategories));
     }
 
@@ -41,6 +41,7 @@ export class ServiceCategoryService {
                 Name: category.Name,
                 ShortName: category.ShortName,
                 LinkId: category.LinkId,
+                SortOrder: category.SortOrder,
                 Services: []
             };
 
@@ -51,6 +52,7 @@ export class ServiceCategoryService {
                     ImageUrl: service.ImageUrl,
                     Title: service.Title,
                     Description: this.addHtmlBreak(service.Description),
+                    SortOrder: service.SortOrder,
                     ServiceOptions: []
                 };
 
@@ -60,7 +62,8 @@ export class ServiceCategoryService {
                         ServicesId: option.ServicesId,
                         Title: option.Title,
                         Description: this.addHtmlBreak(option.Description),
-                        Footer: this.addHtmlBreak(option.Footer)
+                        Footer: this.addHtmlBreak(option.Footer),
+                        SortOrder: option.SortOrder
                     };
 
                     iService.ServiceOptions.push(iOption);
@@ -87,6 +90,7 @@ export class ServiceCategoryService {
             category.Name = iCategory.Name;
             category.Services = new Array<ServicesVM>();
             category.ShortName = iCategory.ShortName;
+            category.SortOrder = iCategory.SortOrder;
 
             iCategory.Services.forEach((iService: IServices) => {
                 const service = new ServicesVM();
@@ -96,6 +100,7 @@ export class ServiceCategoryService {
                 service.ServiceCategoryId = iService.ServiceCategoryId;
                 service.ServiceOptions = new Array<ServiceOptionVM>();
                 service.Title = iService.Title;
+                service.SortOrder = iService.SortOrder;
 
                 iService.ServiceOptions.forEach((iOption: IServiceOption) => {
                     const option = new ServiceOptionVM();
@@ -104,6 +109,7 @@ export class ServiceCategoryService {
                     option.Id = iOption.Id;
                     option.ServicesId = iOption.ServicesId;
                     option.Title = iOption.Title;
+                    option.SortOrder = iOption.SortOrder;
 
                     service.ServiceOptions.push(option);
                 });

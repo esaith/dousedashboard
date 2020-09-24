@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, SimpleChanges, OnChanges, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
@@ -8,9 +8,10 @@ import { Location } from '@angular/common';
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss']
 })
-export class NavComponent implements OnInit {
+export class NavComponent implements OnInit, OnChanges {
+  @Output('beforeNavigate') beforeNavigate = new EventEmitter<string>();
+
   path: string;
-  changePath = new EventEmitter();
   businessId = 0;
 
   constructor(private router: Router, private location: Location, private route: ActivatedRoute) { }
@@ -23,13 +24,15 @@ export class NavComponent implements OnInit {
     }
   }
 
-  modifyServices() {
-    this.changePath.emit();
-    this.router.navigate([`services/${this.businessId}`]);
+  selectPage(page) {
+    if (this.beforeNavigate.observers.length > 0) {
+      this.beforeNavigate.emit(page);
+    } else {
+      // Skip beforeNavigate action
+      this.router.navigate([`${page}/${this.businessId}`]);
+    }
   }
 
-  modifyBusiness() {
-    this.changePath.emit();
-    this.router.navigate([`business/${this.businessId}`]);
+  ngOnChanges(changes: SimpleChanges) {
   }
 }

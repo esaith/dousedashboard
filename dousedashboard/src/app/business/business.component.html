@@ -1,4 +1,4 @@
-<app-nav (changePath)="save()"></app-nav>
+<app-nav (beforeNavigate)='beforeNavigate($event)'></app-nav>
 <button mat-raised-button color="primary" (click)="save()" class='save'>Save</button>
 
 <div class='prop'>Name</div>
@@ -42,6 +42,9 @@
 
 <div class='prop'>Book Now Link</div>
 <input type='text' [(ngModel)]='business.BookNow' />
+
+<div class='prop'>Home Page Notification</div>
+<input type='text' [(ngModel)]='business.Notification' />
 
 <div class='prop'>Logo</div>
 <input type='file' accept="image/*" (change)="uploadImage($event, 'logo')" />

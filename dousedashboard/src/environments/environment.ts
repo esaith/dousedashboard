@@ -4,7 +4,9 @@
 
 export const environment = {
   production: false,
-  api: 'https://localhost:44365/api'
+  // api: 'https://localhost:44365/api'
+  api: 'https://192.168.1.4:83/api'
+  // api: 'https://douseapi.azurewebsites.net/api'
 };
 
 /*

@@ -1,4 +1,4 @@
-<app-nav></app-nav>
+<app-nav (beforeNavigate)='beforeNavigate($event)'></app-nav>
 <button mat-raised-button color="primary" (click)="save()" class='save'>Save</button>
 <div class='flex align-top'>
   <div class='column'>
@@ -6,14 +6,14 @@
     <div *ngFor="let category of categories; let i = index" class="category"
       [class.selected]='selectedCategory?.Id === category.Id'>
       <div class='flex align-center justify-between'>
-        <div class='category-name' (click)='selectCategory(category)'>{{category.Name}}</div>
+        <div class='category-name' (click)='selectCategory(category)' (dblclick)="editName(category)">{{category.Name}}
+        </div>
         <div *ngIf='!category.editing'>
           <button mat-raised-button color="primary" class='option-edit' (click)='editName(category)'>Edit</button>
           <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteCategory(i)'>Del</button>
         </div>
         <div *ngIf='category.editing' class='flex align-center'>
-          <button mat-raised-button color="ok" class='option-edit' (click)='saveName(category)'>A</button>
-          <button mat-raised-button color="warn" class='option-edit' (click)='exitName(category)'>X</button>
+          <button mat-raised-button color="ok" class='option-edit' (click)='saveName(category)'>&#10003;</button>
         </div>
       </div>
       <div class='edit-block' *ngIf='category.editing'>
@@ -29,14 +29,14 @@
     <div *ngFor="let service of selectedCategory.Services; let i = index" class="category"
       [class.selected]='selectedService?.Id === service.Id'>
       <div class='flex align-center justify-between'>
-        <div class='category-name' (click)='selectService(service)'>{{service.Title}}</div>
+        <div class='category-name' (click)='selectService(service)' (dblclick)="editService(service)">{{service.Title}}
+        </div>
         <div *ngIf='!service.editing'>
           <button mat-raised-button color="primary" class='option-edit' (click)='editService(service)'>Edit</button>
           <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteService(i)'>Del</button>
         </div>
         <div *ngIf='service.editing' class='flex align-center'>
-          <button mat-raised-button color="ok" class='option-edit' (click)='saveName(service)'>A</button>
-          <button mat-raised-button color="warn" class='option-edit' (click)='exitName(service)'>X</button>
+          <button mat-raised-button color="ok" class='option-edit' (click)='saveName(service)'>&#10003;</button>
         </div>
       </div>
       <div class='edit-block' *ngIf='service.editing'>
@@ -46,8 +46,10 @@
         <textarea [(ngModel)]='service.Description'></textarea>
         <div>Image</div>
         <input type='file' accept="image/*" (change)="uploadImage($event, service)" />
-        <img *ngIf='image' [src]="image" class="image" />
-        <div *ngIf='!image'>No Image Uploaded Yet</div>
+        <div *ngIf='selectedService.ImageUrl'>
+          <div [style.background-image]="'url(' + selectedService.ImageUrl + ')'" class="image"></div>
+        </div>
+        <div *ngIf='!selectedService.ImageUrl'>No Image Uploaded Yet</div>
       </div>
     </div>
 
@@ -55,16 +57,15 @@
   <div class='column' *ngIf='selectedService'>
     <button mat-raised-button color="primary" (click)="newServiceOption()">Create Service Option</button>
     <div *ngFor="let option of selectedService.ServiceOptions; let i = index" class="category"
-      [class.selected]='selectedServiceOption?.Id === option.Id'>
+      [class.selected]='selectedOption?.Id === option.Id && selectedOption.Title === option.Title'>
       <div class='flex align-center justify-between'>
-        <div class='category-name'>{{option.Title}}</div>
+        <div class='category-name' (dblclick)="editOption(i)">{{option.Title}}</div>
         <div *ngIf='!option.editing'>
-          <button mat-raised-button color="primary" class='option-edit' (click)='editOption(option)'>Edit</button>
+          <button mat-raised-button color="primary" class='option-edit' (click)='editOption(i)'>Edit</button>
           <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteServiceOption(i)'>Del</button>
         </div>
         <div *ngIf='option.editing' class='flex align-center'>
-          <button mat-raised-button color="ok" class='option-edit' (click)='saveName(option)'>A</button>
-          <button mat-raised-button color="warn" class='option-edit' (click)='exitName(option)'>X</button>
+          <button mat-raised-button color="ok" class='option-edit' (click)='saveName(option)'>&#10003;</button>
         </div>
       </div>
       <div class='edit-block' *ngIf='option.editing'>

@@ -26,3 +26,8 @@ body {
 .justify-between {
   justify-content: space-between;
 }
+
+.error-snackbar {
+  background-color: red;
+  color: white;
+}
