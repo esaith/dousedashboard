@@ -5,6 +5,7 @@ export interface IServiceCategory {
     ShortName: string;
     LinkId: string;
     SortOrder: number;
+    IsActive: boolean;
 
     Services: Array<IServices>;
 }
@@ -16,6 +17,7 @@ export class ServiceCategoryVM implements IServiceCategory {
     ShortName: string;
     LinkId: string;
     SortOrder: number;
+    IsActive: boolean;
 
     Services = new Array<ServicesVM>();
 
@@ -31,6 +33,7 @@ export interface IServices {
     Title: string;
     Description: string;
     SortOrder: number;
+    IsActive: boolean;
 
     ServiceOptions: Array<IServiceOption>;
 }
@@ -42,6 +45,7 @@ export class ServicesVM implements IServices {
     Title: string;
     Description: string;
     SortOrder: number;
+    IsActive: boolean;
 
     ServiceOptions = new Array<ServiceOptionVM>();
 
@@ -55,7 +59,8 @@ export interface IServiceOption {
     Title: string;
     Description: string;
     Footer: string;
-    SortOrder: string;
+    SortOrder: number;
+    IsActive: boolean;
 }
 
 export class ServiceOptionVM implements IServiceOption {
@@ -64,7 +69,8 @@ export class ServiceOptionVM implements IServiceOption {
     Title: string;
     Description: string;
     Footer: string;
-    SortOrder: string;
+    SortOrder: number;
+    IsActive: boolean;
 
     editing = false;
     constructor() {

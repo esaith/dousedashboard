@@ -11,7 +11,8 @@ import {
     IServices,
     ServiceOptionVM,
 } from './service-category';
-import { flatMap } from 'rxjs/operators';
+import { flatMap, mergeMap } from 'rxjs/operators';
+import { sortBySortOrder } from '../shared/helper';
 
 @Injectable({
     providedIn: 'root',
@@ -21,13 +22,16 @@ export class ServiceCategoryService {
 
     save(serviceCategories: Array<ServiceCategoryVM>, businessId: number): Observable<ServiceCategoryVM[]> {
         return this.http.put<ServiceCategoryVM[]>(`${environment.api}/services/business/${businessId}`,
-            this.convertToDTO(serviceCategories));
+            this.convertToDTO(serviceCategories))
+            .pipe(
+                mergeMap(response => of(this.convertFromDTO(response)))
+            );
     }
 
     getByBusinessId(businessId: string | number): Observable<Array<ServiceCategoryVM>> {
         return this.http.get<Array<ServiceCategoryVM>>(`${environment.api}/services/business/${businessId}`)
             .pipe(
-                flatMap(response => of(this.convertFromDTO(response)))
+                mergeMap(response => of(this.convertFromDTO(response)))
             );
     }
 
@@ -42,6 +46,7 @@ export class ServiceCategoryService {
                 ShortName: category.ShortName,
                 LinkId: category.LinkId,
                 SortOrder: category.SortOrder,
+                IsActive: category.IsActive,
                 Services: []
             };
 
@@ -53,6 +58,7 @@ export class ServiceCategoryService {
                     Title: service.Title,
                     Description: this.addHtmlBreak(service.Description),
                     SortOrder: service.SortOrder,
+                    IsActive: service.IsActive,
                     ServiceOptions: []
                 };
 
@@ -63,7 +69,8 @@ export class ServiceCategoryService {
                         Title: option.Title,
                         Description: this.addHtmlBreak(option.Description),
                         Footer: this.addHtmlBreak(option.Footer),
-                        SortOrder: option.SortOrder
+                        SortOrder: option.SortOrder,
+                        IsActive: option.IsActive
                     };
 
                     iService.ServiceOptions.push(iOption);
@@ -91,6 +98,7 @@ export class ServiceCategoryService {
             category.Services = new Array<ServicesVM>();
             category.ShortName = iCategory.ShortName;
             category.SortOrder = iCategory.SortOrder;
+            category.IsActive = iCategory.IsActive;
 
             iCategory.Services.forEach((iService: IServices) => {
                 const service = new ServicesVM();
@@ -101,6 +109,7 @@ export class ServiceCategoryService {
                 service.ServiceOptions = new Array<ServiceOptionVM>();
                 service.Title = iService.Title;
                 service.SortOrder = iService.SortOrder;
+                service.IsActive = iService.IsActive;
 
                 iService.ServiceOptions.forEach((iOption: IServiceOption) => {
                     const option = new ServiceOptionVM();
@@ -110,16 +119,20 @@ export class ServiceCategoryService {
                     option.ServicesId = iOption.ServicesId;
                     option.Title = iOption.Title;
                     option.SortOrder = iOption.SortOrder;
+                    option.IsActive = iOption.IsActive;
 
                     service.ServiceOptions.push(option);
                 });
 
+                service.ServiceOptions.sort(sortBySortOrder);
                 category.Services.push(service);
             });
 
+            category.Services.sort(sortBySortOrder);
             result.push(category);
         });
 
+        result.sort(sortBySortOrder);
         return result;
     }
 

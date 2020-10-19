@@ -1,8 +1,11 @@
+@import "../styles/main";
+
 .category {
   margin: 10px 0;
   border: 1px solid black;
   cursor: pointer;
   user-select: none;
+  background-color: white;
 
   &.selected {
     box-shadow: 1px 1px 0 0 #555;

@@ -8,6 +8,8 @@ import { catchError, mergeMap } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { SaveDialogComponent } from '../shared/save-dialog/save-dialog.component';
 import { of, Observable } from 'rxjs';
+import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { sortBySortOrder } from '../shared/helper';
 
 @Component({
   selector: 'app-services',
@@ -162,10 +164,11 @@ export class ServicesComponent implements OnInit {
 
   async save() {
     this.snackBar.open('Saving...');
-    this.categories = await this.sendSave().toPromise();
     this.selectedCategory = null;
     this.selectedService = null;
     this.selectedOption = null;
+
+    this.sendSave().subscribe(categories => this.categories = categories);
   }
 
   sendSave(): Observable<ServiceCategoryVM[]> {
@@ -235,6 +238,34 @@ export class ServicesComponent implements OnInit {
     this.showingDeleteModal = false;
     this.deleteCategoryIndex = -1;
     this.deleteServiceIndex = -1;
+  }
+
+  onCategoryDrop(event: CdkDragDrop<ServiceCategoryVM[]>): void {
+    moveItemInArray(this.categories, event.previousIndex, event.currentIndex);
+    this.categories = this.categories.map((cat: ServiceCategoryVM, index: number) => {
+      cat.SortOrder = index;
+      return cat;
+    });
+  }
+
+  onServiceDrop(event: CdkDragDrop<ServicesVM[]>): void {
+    moveItemInArray(this.selectedCategory.Services, event.previousIndex, event.currentIndex);
+    this.selectedCategory.Services = this.selectedCategory.Services.map((service: ServicesVM, index: number) => {
+      service.SortOrder = index;
+      return service;
+    });
+  }
+
+  onOptionDrop(event: CdkDragDrop<ServicesVM[]>): void {
+    moveItemInArray(this.selectedService.ServiceOptions, event.previousIndex, event.currentIndex);
+    this.selectedService.ServiceOptions = this.selectedService.ServiceOptions.map((option: ServiceOptionVM, index: number) => {
+      option.SortOrder = index;
+      return option;
+    });
+  }
+
+  trackById(index: number, item: { Id: number }) {
+    return item.Id;
   }
 
   mock() {

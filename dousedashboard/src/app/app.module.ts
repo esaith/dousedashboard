@@ -4,6 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Routes, RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -40,6 +42,8 @@ const routes: Routes = [
     MatButtonModule,
     MatSnackBarModule,
     MatDialogModule,
+    DragDropModule,
+    MatCheckboxModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
   ],

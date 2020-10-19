@@ -3,78 +3,89 @@
 <div class='flex align-top'>
   <div class='column'>
     <button mat-raised-button color="primary" (click)="newCategory()">Create Category</button>
-    <div *ngFor="let category of categories; let i = index" class="category"
-      [class.selected]='selectedCategory?.Id === category.Id'>
-      <div class='flex align-center justify-between'>
-        <div class='category-name' (click)='selectCategory(category)' (dblclick)="editName(category)">{{category.Name}}
+    <div cdkDropList class="example-list" (cdkDropListDropped)="onCategoryDrop($event)">
+      <div *ngFor="let category of categories; let i = index; trackBy: trackById" class="category" cdkDrag
+        [class.selected]='selectedCategory?.Id === category.Id'>
+        <div class='flex align-center justify-between'>
+          <div class='category-name' (click)='selectCategory(category)' (dblclick)="editName(category)">
+            {{category.Name}}
+          </div>
+          <div *ngIf='!category.editing'>
+            <button mat-raised-button color="primary" class='option-edit' (click)='editName(category)'>Edit</button>
+            <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteCategory(i)'>Del</button>
+          </div>
+          <div *ngIf='category.editing' class='flex align-center'>
+            <button mat-raised-button color="ok" class='option-edit' (click)='saveName(category)'>&#10003;</button>
+          </div>
         </div>
-        <div *ngIf='!category.editing'>
-          <button mat-raised-button color="primary" class='option-edit' (click)='editName(category)'>Edit</button>
-          <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteCategory(i)'>Del</button>
+        <div class='edit-block' *ngIf='category.editing'>
+          <mat-checkbox color="primary" [(ngModel)]="category.IsActive">Active</mat-checkbox>
+          <div class='title'>Title</div>
+          <input type='text' [(ngModel)]='category.Name' />
+          <div class='title'>Short Title</div>
+          <input type='text' [(ngModel)]='category.ShortName' />
         </div>
-        <div *ngIf='category.editing' class='flex align-center'>
-          <button mat-raised-button color="ok" class='option-edit' (click)='saveName(category)'>&#10003;</button>
-        </div>
-      </div>
-      <div class='edit-block' *ngIf='category.editing'>
-        <div class='title'>Title</div>
-        <input type='text' [(ngModel)]='category.Name' />
-        <div class='title'>Short Title</div>
-        <input type='text' [(ngModel)]='category.ShortName' />
       </div>
     </div>
   </div>
   <div class='column' *ngIf='selectedCategory'>
     <button mat-raised-button color="primary" (click)="newService()">Create Service</button>
-    <div *ngFor="let service of selectedCategory.Services; let i = index" class="category"
-      [class.selected]='selectedService?.Id === service.Id'>
-      <div class='flex align-center justify-between'>
-        <div class='category-name' (click)='selectService(service)' (dblclick)="editService(service)">{{service.Title}}
+    <div cdkDropList class="example-list" (cdkDropListDropped)="onServiceDrop($event)">
+      <div *ngFor="let service of selectedCategory.Services; let i = index" class="category" cdkDrag
+        [class.selected]='selectedService?.Id === service.Id'>
+        <div class='flex align-center justify-between'>
+          <div class='category-name' (click)='selectService(service)' (dblclick)="editService(service)">
+            {{service.Title}}
+          </div>
+          <div *ngIf='!service.editing'>
+            <button mat-raised-button color="primary" class='option-edit' (click)='editService(service)'>Edit</button>
+            <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteService(i)'>Del</button>
+          </div>
+          <div *ngIf='service.editing' class='flex align-center'>
+            <button mat-raised-button color="ok" class='option-edit' (click)='saveName(service)'>&#10003;</button>
+          </div>
         </div>
-        <div *ngIf='!service.editing'>
-          <button mat-raised-button color="primary" class='option-edit' (click)='editService(service)'>Edit</button>
-          <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteService(i)'>Del</button>
+        <div class='edit-block' *ngIf='service.editing'>
+          <mat-checkbox color="primary" [(ngModel)]="service.IsActive">Active</mat-checkbox>
+          <div class='title'>Title</div>
+          <input type='text' [(ngModel)]='service.Title' />
+          <div class='title'>Description</div>
+          <textarea [(ngModel)]='service.Description'></textarea>
+          <div>Image</div>
+          <input type='file' accept="image/*" (change)="uploadImage($event, service)" />
+          <div *ngIf='selectedService.ImageUrl'>
+            <div [style.background-image]="'url(' + selectedService.ImageUrl + ')'" class="image"></div>
+          </div>
+          <div *ngIf='!selectedService.ImageUrl'>No Image Uploaded Yet</div>
         </div>
-        <div *ngIf='service.editing' class='flex align-center'>
-          <button mat-raised-button color="ok" class='option-edit' (click)='saveName(service)'>&#10003;</button>
-        </div>
-      </div>
-      <div class='edit-block' *ngIf='service.editing'>
-        <div class='title'>Title</div>
-        <input type='text' [(ngModel)]='service.Title' />
-        <div class='title'>Description</div>
-        <textarea [(ngModel)]='service.Description'></textarea>
-        <div>Image</div>
-        <input type='file' accept="image/*" (change)="uploadImage($event, service)" />
-        <div *ngIf='selectedService.ImageUrl'>
-          <div [style.background-image]="'url(' + selectedService.ImageUrl + ')'" class="image"></div>
-        </div>
-        <div *ngIf='!selectedService.ImageUrl'>No Image Uploaded Yet</div>
       </div>
     </div>
-
   </div>
   <div class='column' *ngIf='selectedService'>
     <button mat-raised-button color="primary" (click)="newServiceOption()">Create Service Option</button>
-    <div *ngFor="let option of selectedService.ServiceOptions; let i = index" class="category"
-      [class.selected]='selectedOption?.Id === option.Id && selectedOption.Title === option.Title'>
-      <div class='flex align-center justify-between'>
-        <div class='category-name' (dblclick)="editOption(i)">{{option.Title}}</div>
-        <div *ngIf='!option.editing'>
-          <button mat-raised-button color="primary" class='option-edit' (click)='editOption(i)'>Edit</button>
-          <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteServiceOption(i)'>Del</button>
+    <div cdkDropList class="example-list" (cdkDropListDropped)="onOptionDrop($event)">
+      <div *ngFor="let option of selectedService.ServiceOptions; let i = index" class="category" cdkDrag
+        [class.selected]='selectedOption?.Id === option.Id && selectedOption.Title === option.Title'>
+        <div class='flex align-center justify-between'>
+          <div class='category-name' (dblclick)="editOption(i)">{{option.Title}}</div>
+          <div *ngIf='!option.editing'>
+            <button mat-raised-button color="primary" class='option-edit' (click)='editOption(i)'>Edit</button>
+            <button mat-raised-button color="warn" class='option-edit'
+              (click)='verifyDeleteServiceOption(i)'>Del</button>
+          </div>
+          <div *ngIf='option.editing' class='flex align-center'>
+            <button mat-raised-button color="ok" class='option-edit' (click)='saveName(option)'>&#10003;</button>
+          </div>
         </div>
-        <div *ngIf='option.editing' class='flex align-center'>
-          <button mat-raised-button color="ok" class='option-edit' (click)='saveName(option)'>&#10003;</button>
+        <div class='edit-block' *ngIf='option.editing'>
+          <mat-checkbox color="primary" [(ngModel)]="option.IsActive">Active</mat-checkbox>
+          <div class='title'>Title</div>
+          <input type='text' [(ngModel)]='option.Title' />
+          <div class='title'>Description</div>
+          <textarea [(ngModel)]='option.Description'></textarea>
+          <div>Footer</div>
+          <textarea [(ngModel)]='option.Footer'></textarea>
         </div>
-      </div>
-      <div class='edit-block' *ngIf='option.editing'>
-        <div class='title'>Title</div>
-        <input type='text' [(ngModel)]='option.Title' />
-        <div class='title'>Description</div>
-        <textarea [(ngModel)]='option.Description'></textarea>
-        <div>Footer</div>
-        <textarea [(ngModel)]='option.Footer'></textarea>
       </div>
     </div>
   </div>
