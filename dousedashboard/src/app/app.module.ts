@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -42,6 +43,7 @@ const routes: Routes = [
     MatButtonModule,
     MatSnackBarModule,
     MatDialogModule,
+    MatIconModule,
     DragDropModule,
     MatCheckboxModule,
     BrowserAnimationsModule,

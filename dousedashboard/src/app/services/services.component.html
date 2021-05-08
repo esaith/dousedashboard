@@ -7,6 +7,7 @@
       <div *ngFor="let category of categories; let i = index; trackBy: trackById" class="category" cdkDrag
         [class.selected]='selectedCategory?.Id === category.Id'>
         <div class='flex align-center justify-between'>
+          <mat-icon class='draghandle' cdkDragHandle>reorder</mat-icon>
           <div class='category-name' (click)='selectCategory(category)' (dblclick)="editName(category)">
             {{category.Name}}
           </div>
@@ -31,9 +32,9 @@
   <div class='column' *ngIf='selectedCategory'>
     <button mat-raised-button color="primary" (click)="newService()">Create Service</button>
     <div cdkDropList class="example-list" (cdkDropListDropped)="onServiceDrop($event)">
-      <div *ngFor="let service of selectedCategory.Services; let i = index" class="category" cdkDrag
-        [class.selected]='selectedService?.Id === service.Id'>
+      <div *ngFor="let service of selectedCategory.Services; let i = index" class="category" cdkDrag [class.selected]='selectedService?.Id === service.Id'>
         <div class='flex align-center justify-between'>
+          <mat-icon class='draghandle' cdkDragHandle>reorder</mat-icon>
           <div class='category-name' (click)='selectService(service)' (dblclick)="editService(service)">
             {{service.Title}}
           </div>
@@ -67,11 +68,11 @@
       <div *ngFor="let option of selectedService.ServiceOptions; let i = index" class="category" cdkDrag
         [class.selected]='selectedOption?.Id === option.Id && selectedOption.Title === option.Title'>
         <div class='flex align-center justify-between'>
+          <mat-icon class='draghandle' cdkDragHandle>reorder</mat-icon>
           <div class='category-name' (dblclick)="editOption(i)">{{option.Title}}</div>
           <div *ngIf='!option.editing'>
             <button mat-raised-button color="primary" class='option-edit' (click)='editOption(i)'>Edit</button>
-            <button mat-raised-button color="warn" class='option-edit'
-              (click)='verifyDeleteServiceOption(i)'>Del</button>
+            <button mat-raised-button color="warn" class='option-edit' (click)='verifyDeleteServiceOption(i)'>Del</button>
           </div>
           <div *ngIf='option.editing' class='flex align-center'>
             <button mat-raised-button color="ok" class='option-edit' (click)='saveName(option)'>&#10003;</button>

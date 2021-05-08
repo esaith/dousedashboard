@@ -126,3 +126,10 @@
     }
   }
 }
+
+.draghandle {
+  &:hover,
+  &:active {
+    cursor: move;
+  }
+}
