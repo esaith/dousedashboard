@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ServiceCategoryVM, ServiceOptionVM, ServicesVM } from '../entities/service-category';
+import { ServiceCategory, ServiceOption, Service } from '../entities/service-category';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ServiceCategoryService } from '../entities/serviceCategory.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, mergeMap } from 'rxjs/operators';
@@ -19,15 +19,15 @@ import { sortBySortOrder } from '../shared/helper';
 export class ServicesComponent implements OnInit {
   title = 'dousedashboard';
   businessId: number;
-  categories = new Array<ServiceCategoryVM>();
+  categories = new Array<ServiceCategory>();
   showingDeleteModal = false;
   deleteCategoryIndex = -1;
   deleteServiceIndex = -1;
   deleteServiceOptionIndex = -1;
 
-  selectedCategory: ServiceCategoryVM;
-  selectedService: ServicesVM;
-  selectedOption: ServiceOptionVM;
+  selectedCategory: ServiceCategory;
+  selectedService: Service;
+  selectedOption: ServiceOption;
   image: SafeUrl;
   backgroundImageUrl: '';
 
@@ -56,30 +56,30 @@ export class ServicesComponent implements OnInit {
   }
 
   newCategory() {
-    const category = new ServiceCategoryVM();
+    const category = new ServiceCategory();
     category.Name = 'New Category ' + (this.categories.length + 1);
     this.categories.push(category);
   }
 
   newService() {
-    const service = new ServicesVM();
+    const service = new Service();
     service.Title = 'My New Service' + (this.selectedCategory.Services.length + 1);
     this.selectedCategory.Services.push(service);
   }
 
   newServiceOption() {
-    const serviceOption = new ServiceOptionVM();
+    const serviceOption = new ServiceOption();
     serviceOption.Title = 'Service Option' + (this.selectedService.ServiceOptions.length + 1);
     this.selectedService.ServiceOptions.push(serviceOption);
   }
 
-  selectCategory(category: ServiceCategoryVM) {
+  selectCategory(category: ServiceCategory) {
     this.selectedCategory = category;
     this.selectedService = null;
     this.selectedOption = null;
   }
 
-  selectService(service: ServicesVM) {
+  selectService(service: Service) {
     this.selectedService = service;
     if (this.selectedService.ImageUrl) {
     } else {
@@ -87,7 +87,7 @@ export class ServicesComponent implements OnInit {
     }
   }
 
-  editName(item: ServiceCategoryVM | ServicesVM) {
+  editName(item: ServiceCategory | Service) {
     for (const cat of this.categories) {
       cat.editing = false;
     }
@@ -101,7 +101,7 @@ export class ServicesComponent implements OnInit {
     item.editing = true;
   }
 
-  editService(service: ServicesVM) {
+  editService(service: Service) {
     for (const s of this.selectedCategory.Services) {
       s.editing = false;
     }
@@ -112,7 +112,7 @@ export class ServicesComponent implements OnInit {
     this.image = this.selectedService.ImageUrl;
   }
 
-  saveName(item: ServiceCategoryVM | ServicesVM) {
+  saveName(item: ServiceCategory | Service) {
     item.editing = false;
   }
 
@@ -139,16 +139,15 @@ export class ServicesComponent implements OnInit {
     this.deleteServiceOptionIndex = index;
   }
 
-  uploadImage(event: any, service: ServicesVM) {
-    this.selectedService = service;
-
+  uploadImage(event: any, service: { ImageUrl: string }) {
     if (event.target.files && event.target.files.length > 0) {
       if (event.target.files[0].size < 220000) {
         const file: File = event.target.files[0];
         const reader = new FileReader();
+
         reader.onload = e => {
           const blob = window.URL.createObjectURL(file);
-          this.selectedService.ImageUrl = e.target.result.toString();
+          service.ImageUrl = e.target.result.toString();
           this.image = this.sanitizer.bypassSecurityTrustStyle(e.target.result.toString());
         };
 
@@ -164,14 +163,33 @@ export class ServicesComponent implements OnInit {
 
   async save() {
     this.snackBar.open('Saving...');
-    this.selectedCategory = null;
-    this.selectedService = null;
-    this.selectedOption = null;
 
-    this.sendSave().subscribe(categories => this.categories = categories);
+    const categoryId = this.selectedCategory?.Id;
+    const selectedServiceId = this.selectedService?.Id;
+    const selectedOptionId = this.selectedOption?.Id;
+
+    this.sendSave().subscribe(categories => {
+      this.categories = categories;
+      if (categoryId) {
+        const selectedCategory = this.categories.find(x => x.Id === categoryId);
+
+        if (selectedCategory)
+          this.selectCategory(selectedCategory);
+
+        if (selectedServiceId) {
+          const selectedService = this.selectedCategory.Services.find(x => x.Id === selectedServiceId);
+
+          if (selectedService)
+            this.selectService(selectedService);
+
+          if (selectedOptionId)
+            this.selectedOption = this.selectedService.ServiceOptions.find(x => x.Id === selectedOptionId);
+        }
+      }
+    });
   }
 
-  sendSave(): Observable<ServiceCategoryVM[]> {
+  sendSave(): Observable<ServiceCategory[]> {
     return this.serviceCategoryService.save(this.categories, this.businessId)
       .pipe(
         catchError(error => {
@@ -181,7 +199,7 @@ export class ServicesComponent implements OnInit {
 
           return error;
         }),
-        mergeMap((response: ServiceCategoryVM[]): Observable<ServiceCategoryVM[]> => {
+        mergeMap((response: ServiceCategory[]): Observable<ServiceCategory[]> => {
           if (response) {
             this.snackBar.open('Saved to server', '', {
               duration: 3000
@@ -240,25 +258,25 @@ export class ServicesComponent implements OnInit {
     this.deleteServiceIndex = -1;
   }
 
-  onCategoryDrop(event: CdkDragDrop<ServiceCategoryVM[]>): void {
+  onCategoryDrop(event: CdkDragDrop<ServiceCategory[]>): void {
     moveItemInArray(this.categories, event.previousIndex, event.currentIndex);
-    this.categories = this.categories.map((cat: ServiceCategoryVM, index: number) => {
+    this.categories = this.categories.map((cat: ServiceCategory, index: number) => {
       cat.SortOrder = index;
       return cat;
     });
   }
 
-  onServiceDrop(event: CdkDragDrop<ServicesVM[]>): void {
+  onServiceDrop(event: CdkDragDrop<Service[]>): void {
     moveItemInArray(this.selectedCategory.Services, event.previousIndex, event.currentIndex);
-    this.selectedCategory.Services = this.selectedCategory.Services.map((service: ServicesVM, index: number) => {
+    this.selectedCategory.Services = this.selectedCategory.Services.map((service: Service, index: number) => {
       service.SortOrder = index;
       return service;
     });
   }
 
-  onOptionDrop(event: CdkDragDrop<ServicesVM[]>): void {
+  onOptionDrop(event: CdkDragDrop<Service[]>): void {
     moveItemInArray(this.selectedService.ServiceOptions, event.previousIndex, event.currentIndex);
-    this.selectedService.ServiceOptions = this.selectedService.ServiceOptions.map((option: ServiceOptionVM, index: number) => {
+    this.selectedService.ServiceOptions = this.selectedService.ServiceOptions.map((option: ServiceOption, index: number) => {
       option.SortOrder = index;
       return option;
     });
@@ -269,13 +287,13 @@ export class ServicesComponent implements OnInit {
   }
 
   mock() {
-    const category = new ServiceCategoryVM();
+    const category = new ServiceCategory();
     category.Name = 'My Category 1';
 
-    const service = new ServicesVM();
+    const service = new Service();
     service.Title = 'My Service';
 
-    const serviceOption = new ServiceOptionVM();
+    const serviceOption = new ServiceOption();
     serviceOption.Title = 'My Option 1';
     service.ServiceOptions.push(serviceOption);
 

@@ -6,9 +6,9 @@
     <div cdkDropList class="example-list" (cdkDropListDropped)="onCategoryDrop($event)">
       <div *ngFor="let category of categories; let i = index; trackBy: trackById" class="category" cdkDrag
         [class.selected]='selectedCategory?.Id === category.Id'>
-        <div class='flex align-center justify-between'>
+        <div class='flex align-center justify-between' (click)='selectCategory(category)'>
           <mat-icon class='draghandle' cdkDragHandle>reorder</mat-icon>
-          <div class='category-name' (click)='selectCategory(category)' (dblclick)="editName(category)">
+          <div class='category-name' (dblclick)="editName(category)">
             {{category.Name}}
           </div>
           <div *ngIf='!category.editing'>
@@ -25,6 +25,13 @@
           <input type='text' [(ngModel)]='category.Name' />
           <div class='title'>Short Title</div>
           <input type='text' [(ngModel)]='category.ShortName' />
+          <div>
+            <input type='file' accept="image/*" (change)="uploadImage($event, category)" />
+            <div *ngIf='category.ImageUrl'>
+              <div [style.background-image]="'url(' + category.ImageUrl + ')'" class="image"></div>
+            </div>
+            <div *ngIf='!category.ImageUrl'>No Image Uploaded Yet</div>
+          </div>
         </div>
       </div>
     </div>
@@ -33,9 +40,9 @@
     <button mat-raised-button color="primary" (click)="newService()">Create Service</button>
     <div cdkDropList class="example-list" (cdkDropListDropped)="onServiceDrop($event)">
       <div *ngFor="let service of selectedCategory.Services; let i = index" class="category" cdkDrag [class.selected]='selectedService?.Id === service.Id'>
-        <div class='flex align-center justify-between'>
+        <div class='flex align-center justify-between' (click)='selectService(service)'>
           <mat-icon class='draghandle' cdkDragHandle>reorder</mat-icon>
-          <div class='category-name' (click)='selectService(service)' (dblclick)="editService(service)">
+          <div class='category-name' (dblclick)="editService(service)">
             {{service.Title}}
           </div>
           <div *ngIf='!service.editing'>
