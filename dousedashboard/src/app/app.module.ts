@@ -18,6 +18,7 @@ import { BusinessComponent } from './business/business.component';
 import { BusinessService } from './entities/business.service';
 import { BlogComponent } from './blog/blog.component';
 import { SaveDialogComponent } from './shared/save-dialog/save-dialog.component';
+import { DeleteDialogComponent } from './shared/delete-dialog/delete-dialog.component';
 
 const routes: Routes = [
   { path: 'business/:id', component: BusinessComponent },
@@ -33,7 +34,8 @@ const routes: Routes = [
     NavComponent,
     BusinessComponent,
     BlogComponent,
-    SaveDialogComponent
+    SaveDialogComponent,
+    DeleteDialogComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -50,7 +52,8 @@ const routes: Routes = [
     ReactiveFormsModule,
   ],
   entryComponents: [
-    SaveDialogComponent
+    SaveDialogComponent,
+    DeleteDialogComponent
   ],
   providers: [BusinessService],
   bootstrap: [AppComponent]

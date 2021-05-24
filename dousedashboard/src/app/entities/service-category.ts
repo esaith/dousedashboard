@@ -77,6 +77,7 @@ export class ServiceOptionDTO {
     Footer = '';
     SortOrder = 0;
     IsActive = true;
+    ImageUrl = '';
 
     constructor(option?: ServiceOption) {
         if (option) {

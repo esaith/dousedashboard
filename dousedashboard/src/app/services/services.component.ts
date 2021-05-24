@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { ServiceCategory, ServiceOption, Service } from '../entities/service-category';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { Component, OnInit, Optional } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ServiceCategoryService } from '../entities/serviceCategory.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, mergeMap } from 'rxjs/operators';
+import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
+
+import { ServiceCategory, ServiceOption, Service } from '../entities/service-category';
+import { ServiceCategoryService } from '../entities/serviceCategory.service';
 import { MatDialog } from '@angular/material/dialog';
 import { SaveDialogComponent } from '../shared/save-dialog/save-dialog.component';
 import { of, Observable } from 'rxjs';
-import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
-import { sortBySortOrder } from '../shared/helper';
+import { DeleteDialogComponent } from '../shared/delete-dialog/delete-dialog.component';
 
 @Component({
   selector: 'app-services',
@@ -20,11 +21,6 @@ export class ServicesComponent implements OnInit {
   title = 'dousedashboard';
   businessId: number;
   categories = new Array<ServiceCategory>();
-  showingDeleteModal = false;
-  deleteCategoryIndex = -1;
-  deleteServiceIndex = -1;
-  deleteServiceOptionIndex = -1;
-
   selectedCategory: ServiceCategory;
   selectedService: Service;
   selectedOption: ServiceOption;
@@ -37,7 +33,7 @@ export class ServicesComponent implements OnInit {
     public sanitizer: DomSanitizer,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
   ) {
     this.snackBar.open('Getting user data from the server ...');
   }
@@ -55,7 +51,7 @@ export class ServicesComponent implements OnInit {
       });
   }
 
-  newCategory() {
+  createCategory() {
     const category = new ServiceCategory();
     category.Name = 'New Category ' + (this.categories.length + 1);
     this.categories.push(category);
@@ -124,19 +120,37 @@ export class ServicesComponent implements OnInit {
     this.selectedService.ServiceOptions[index].editing = true;
   }
 
-  verifyDeleteCategory(index: number) {
-    this.showingDeleteModal = true;
-    this.deleteCategoryIndex = index;
+  deleteCategory(category: ServiceCategory) {
+    const deleteDialog = this.dialog.open(DeleteDialogComponent);
+    deleteDialog.afterClosed().subscribe(async result => {
+      if (result) {
+        this.categories = this.categories.filter(x => x.Id !== category.Id);
+        this.selectedCategory = null;
+        this.selectedService = null;
+        this.selectedOption = null;
+      }
+    });
   }
 
-  verifyDeleteService(index: number) {
-    this.showingDeleteModal = true;
-    this.deleteServiceIndex = index;
+  deleteService(service: Service) {
+    const deleteDialog = this.dialog.open(DeleteDialogComponent);
+    deleteDialog.afterClosed().subscribe(async result => {
+      if (result) {
+        this.selectedCategory.Services = this.selectedCategory.Services.filter(x => x.Id !== service.Id);
+        this.selectedService = null;
+        this.selectedOption = null;
+      }
+    });
   }
 
-  verifyDeleteServiceOption(index: number) {
-    this.showingDeleteModal = true;
-    this.deleteServiceOptionIndex = index;
+  deleteOption(option: ServiceOption) {
+    const deleteDialog = this.dialog.open(DeleteDialogComponent);
+    deleteDialog.afterClosed().subscribe(async result => {
+      if (result) {
+        this.selectedService.ServiceOptions = this.selectedService.ServiceOptions.filter(x => x.Id !== option.Id);
+        this.selectedOption = null;
+      }
+    });
   }
 
   uploadImage(event: any, service: { ImageUrl: string }) {
@@ -222,42 +236,6 @@ export class ServicesComponent implements OnInit {
     });
   }
 
-  delete() {
-    if (this.deleteCategoryIndex > -1) {
-      const deletedCategory = this.categories.splice(this.deleteCategoryIndex, 1)[0];
-
-      if (this.selectedCategory && deletedCategory && this.selectedCategory.Id === deletedCategory.Id) {
-        this.selectedCategory = null;
-        this.selectedService = null;
-        this.selectedOption = null;
-      }
-    } else if (this.deleteServiceIndex > -1) {
-      const deletedService = this.selectedCategory.Services.splice(this.deleteServiceIndex, 1)[0];
-
-      if (this.selectedService && this.selectedService.Id === deletedService.Id) {
-        this.selectedService = null;
-        this.selectedOption = null;
-      }
-    } else if (this.deleteServiceOptionIndex > -1) {
-      const deletedOption = this.selectedService.ServiceOptions.splice(this.deleteServiceOptionIndex, 1)[0];
-      if (this.selectedOption && this.selectedOption.Id === deletedOption.Id) {
-        this.selectedOption = null;
-      }
-    }
-
-    this.deleteCategoryIndex = -1;
-    this.deleteServiceIndex = -1;
-    this.deleteServiceOptionIndex = -1;
-
-    this.showingDeleteModal = false;
-  }
-
-  cancelModal() {
-    this.showingDeleteModal = false;
-    this.deleteCategoryIndex = -1;
-    this.deleteServiceIndex = -1;
-  }
-
   onCategoryDrop(event: CdkDragDrop<ServiceCategory[]>): void {
     moveItemInArray(this.categories, event.previousIndex, event.currentIndex);
     this.categories = this.categories.map((cat: ServiceCategory, index: number) => {
@@ -284,24 +262,5 @@ export class ServicesComponent implements OnInit {
 
   trackById(index: number, item: { Id: number }) {
     return item.Id;
-  }
-
-  mock() {
-    const category = new ServiceCategory();
-    category.Name = 'My Category 1';
-
-    const service = new Service();
-    service.Title = 'My Service';
-
-    const serviceOption = new ServiceOption();
-    serviceOption.Title = 'My Option 1';
-    service.ServiceOptions.push(serviceOption);
-
-    category.Services.push(service);
-    this.categories.push(category);
-
-    this.selectedCategory = category;
-    this.selectedService = service;
-    this.selectedOption = serviceOption;
   }
 }
