@@ -133,3 +133,13 @@
     cursor: move;
   }
 }
+
+.image-container {
+  position: relative;
+
+  .delete {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}

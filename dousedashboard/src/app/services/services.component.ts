@@ -175,6 +175,10 @@ export class ServicesComponent implements OnInit {
     }
   }
 
+  deleteImage(service: { ImageUrl: string }) {
+    service.ImageUrl = '';
+  }
+
   async save() {
     this.snackBar.open('Saving...');
 
