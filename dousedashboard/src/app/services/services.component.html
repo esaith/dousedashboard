@@ -2,7 +2,7 @@
 <button mat-raised-button color="primary" (click)="save()" class='save'>Save</button>
 <div class='flex align-top'>
   <div class='column'>
-    <button mat-raised-button color="primary" (click)="newCategory()">Create Category</button>
+    <button mat-raised-button color="primary" (click)="createCategory()">Create Category</button>
     <div cdkDropList class="example-list" (cdkDropListDropped)="onCategoryDrop($event)">
       <div *ngFor="let category of categories; let i = index; trackBy: trackById" class="category" cdkDrag
         [class.selected]='selectedCategory?.Id === category.Id'>
