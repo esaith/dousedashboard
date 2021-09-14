@@ -158,7 +158,7 @@ export class ServicesComponent implements OnInit {
 
   uploadImage(event: any, service: { ImageUrl: string, tempImageUrl }) {
     if (event.target.files && event.target.files.length > 0) {
-      if (event.target.files[0].size < 220000) {
+      if (event.target.files[0].size < 320000) {
         const file: File = event.target.files[0];
         this.images.push(file);
         const reader = new FileReader();
@@ -172,7 +172,7 @@ export class ServicesComponent implements OnInit {
 
         reader.readAsDataURL(file);
       } else {
-        this.snackBar.open('Image too large. Please make sure image is less than 200 KB (Preferably 100KB or less)', '',
+        this.snackBar.open('Image too large. Please make sure image is less than 300 KB (Preferably 100KB or less)', '',
           {
             duration: 5000
           });

@@ -72,13 +72,19 @@
           <textarea [(ngModel)]='service.Description'></textarea>
           <div>Image</div>
           <input type='file' accept="image/*" (change)="uploadImage($event, service)" />
-          <div *ngIf='selectedService.ImageUrl' class='image-container'>
-            <div [style.background-image]="'url(' + selectedService.ImageUrl + ')'" class="image"></div>
-            <button mat-mini-fab color="warn" class='delete' (click)='deleteImage(selectedService)'>
+          <div *ngIf='service.tempImageUrl' class='image-container'>
+            <div [style.background-image]="'url(' + service.tempImageUrl + ')'" class="image"></div>
+            <button mat-mini-fab color="warn" class='delete' (click)='deleteImage(service)'>
               <mat-icon>delete</mat-icon>
             </button>
           </div>
-          <div *ngIf='!selectedService.ImageUrl'>No Image Uploaded Yet</div>
+          <div *ngIf='service.ImageUrl && !service.tempImageUrl' class='image-container'>
+            <div [ngStyle]="{'background-image': 'url(' + azureLocation + service.ImageUrl + ')'}" class="image"></div>
+            <button mat-mini-fab color="warn" class='delete' (click)='deleteImage(service)'>
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+          <div *ngIf='!service.ImageUrl'>No Image Uploaded Yet</div>
         </div>
       </div>
     </div>
@@ -109,8 +115,14 @@
           <textarea [(ngModel)]='option.Footer'></textarea>
           <div>Image</div>
           <input type='file' accept="image/*" (change)="uploadImage($event, option)" />
-          <div class='image-container' *ngIf='option.ImageUrl'>
-            <div [style.background-image]="'url(' + option.ImageUrl + ')'" class="image"></div>
+          <div *ngIf='option.tempImageUrl' class='image-container'>
+            <div [style.background-image]="'url(' + option.tempImageUrl + ')'" class="image"></div>
+            <button mat-mini-fab color="warn" class='delete' (click)='deleteImage(option)'>
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+          <div *ngIf='option.ImageUrl && !option.tempImageUrl' class='image-container'>
+            <div [ngStyle]="{'background-image': 'url(' + azureLocation + option.ImageUrl + ')'}" class="image"></div>
             <button mat-mini-fab color="warn" class='delete' (click)='deleteImage(option)'>
               <mat-icon>delete</mat-icon>
             </button>
