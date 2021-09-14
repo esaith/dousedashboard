@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { SaveDialogComponent } from '../shared/save-dialog/save-dialog.component';
 import { of, Observable } from 'rxjs';
 import { DeleteDialogComponent } from '../shared/delete-dialog/delete-dialog.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-services',
@@ -26,6 +27,8 @@ export class ServicesComponent implements OnInit {
   selectedOption: ServiceOption;
   image: SafeUrl;
   backgroundImageUrl: '';
+  images = new Array<File>();
+  azureLocation = environment.azureLocation;
 
   constructor(
     public serviceCategoryService: ServiceCategoryService,
@@ -153,16 +156,18 @@ export class ServicesComponent implements OnInit {
     });
   }
 
-  uploadImage(event: any, service: { ImageUrl: string }) {
+  uploadImage(event: any, service: { ImageUrl: string, tempImageUrl }) {
     if (event.target.files && event.target.files.length > 0) {
       if (event.target.files[0].size < 220000) {
         const file: File = event.target.files[0];
+        this.images.push(file);
         const reader = new FileReader();
 
         reader.onload = e => {
           const blob = window.URL.createObjectURL(file);
-          service.ImageUrl = e.target.result.toString();
-          this.image = this.sanitizer.bypassSecurityTrustStyle(e.target.result.toString());
+          service.ImageUrl = file.name;
+          service.tempImageUrl = blob;
+          this.image = this.sanitizer.bypassSecurityTrustStyle(blob);
         };
 
         reader.readAsDataURL(file);
@@ -175,7 +180,9 @@ export class ServicesComponent implements OnInit {
     }
   }
 
-  deleteImage(service: { ImageUrl: string }) {
+  deleteImage(service: { ImageUrl: string, tempImageUrl: string }) {
+    this.images = this.images.filter(file => file.name !== service.ImageUrl);
+    service.tempImageUrl = '';
     service.ImageUrl = '';
   }
 
@@ -208,7 +215,7 @@ export class ServicesComponent implements OnInit {
   }
 
   sendSave(): Observable<ServiceCategory[]> {
-    return this.serviceCategoryService.save(this.categories, this.businessId)
+    return this.serviceCategoryService.save(this.categories, this.businessId, this.images)
       .pipe(
         catchError(error => {
           this.snackBar.open('Issue saving to the server', '', {

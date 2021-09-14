@@ -4,9 +4,10 @@
 
 export const environment = {
   production: false,
-  // api: 'https://localhost:44365/api'
+  api: 'https://localhost:44365/api',
+  azureLocation: 'https://cs205b35694fe47x4660xa12.blob.core.windows.net/productdata/douseimages/',
   // api: 'https://192.168.1.4:83/api'
-  api: 'https://douseapi.azurewebsites.net/api'
+  // api: 'https://douseapi.azurewebsites.net/api'
 };
 
 /*

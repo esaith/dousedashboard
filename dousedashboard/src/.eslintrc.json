@@ -1,0 +1,78 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi-style": [
+      "error",
+      "last"
+    ],
+    "array-bracket-newline": [
+      "error",
+      "never"
+    ],
+    "@typescript-eslint/explicit-function-return-type": "off"
+  },
+  "overrides": [{
+    "files": [
+      "*.ts",
+      "*.tsx"
+    ],
+    "rules": {
+      "@typescript-eslint/explicit-function-return-type": [
+        "warn",
+        {
+          "allowExpressions": true,
+          "allowConciseArrowFunctionExpressionsStartingWithVoid": true
+        }
+      ],
+      "@angular-eslint/component-selector": "off",
+      "@angular-eslint/directive-selector": "off",
+      "@typescript-eslint/consistent-type-definitions": "error",
+      "@typescript-eslint/dot-notation": "off",
+      "@typescript-eslint/explicit-member-accessibility": [
+        "off",
+        {
+          "accessibility": "explicit"
+        }
+      ],
+      "brace-style": ["error", "1tbs"],
+      "curly": "off",
+      "id-blacklist": "off",
+      "id-match": "off",
+      "no-redeclare": "error",
+      "no-underscore-dangle": "off",
+      "@typescript-eslint/naming-convention": [
+        "warn",
+        {
+          "selector": "property",
+          "format": ["camelCase"]
+        }
+      ],
+      "@typescript-eslint/member-ordering": "off",
+      "prefer-arrow/prefer-arrow-functions": "off",
+      "arrow-body-style": "off",
+      "@typescript-eslint/no-shadow": "error",
+      "no-shadow": "off"
+    }
+  }],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ]
+}

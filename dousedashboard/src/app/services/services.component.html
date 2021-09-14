@@ -27,12 +27,20 @@
           <input type='text' [(ngModel)]='category.ShortName' />
           <div>
             <input type='file' accept="image/*" (change)="uploadImage($event, category)" />
-            <div *ngIf='category.ImageUrl' class='image-container'>
-              <div [style.background-image]="'url(' + category.ImageUrl + ')'" class="image"></div>
+            <div *ngIf='category.tempImageUrl' class='image-container'>
+              <div [style.background-image]="'url(' + category.tempImageUrl + ')'" class="image"></div>
               <button mat-mini-fab color="warn" class='delete' (click)='deleteImage(category)'>
                 <mat-icon>delete</mat-icon>
               </button>
             </div>
+
+            <div *ngIf='category.ImageUrl && !category.tempImageUrl' class='image-container'>
+              <div [ngStyle]="{'background-image': 'url(' + azureLocation + category.ImageUrl + ')'}" class="image"></div>
+              <button mat-mini-fab color="warn" class='delete' (click)='deleteImage(category)'>
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+
             <div *ngIf='!category.ImageUrl'>No Image Uploaded Yet</div>
           </div>
         </div>

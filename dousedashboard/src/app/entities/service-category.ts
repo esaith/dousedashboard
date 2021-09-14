@@ -1,4 +1,5 @@
 import { sortBySortOrder } from '../shared/helper';
+import { copyPrimitives } from './helper';
 
 export class ServiceCategoryDTO {
     Id = 0;
@@ -8,12 +9,13 @@ export class ServiceCategoryDTO {
     LinkId = '';
     SortOrder = 0;
     IsActive = true;
+    ImageUrl = '';
 
     Services: Array<ServiceDTO>;
 
     constructor(serviceCategory?: ServiceCategory) {
         if (serviceCategory) {
-            Object.assign(this, serviceCategory);
+            copyPrimitives(this, serviceCategory);
             this.Services = serviceCategory.Services?.map(x => new ServiceDTO(x));
         }
     }
@@ -28,7 +30,7 @@ export class ServiceCategory extends ServiceCategoryDTO {
         super();
 
         if (dto) {
-            Object.assign(this, dto);
+            copyPrimitives(this, dto);
             this.Services = dto.Services?.map(service => new Service(service)) || new Array<Service>();
             this.Services.sort(sortBySortOrder);
         }
@@ -48,7 +50,7 @@ export class ServiceDTO {
 
     constructor(service?: Service) {
         if (service) {
-            Object.assign(this, service);
+            copyPrimitives(this, service);
             this.ServiceOptions = service.ServiceOptions?.map(x => new ServiceOptionDTO(x));
         }
     }
@@ -62,7 +64,7 @@ export class Service extends ServiceDTO {
         super();
 
         if (dto) {
-            Object.assign(this, dto);
+            copyPrimitives(this, dto);
             this.ServiceOptions = dto?.ServiceOptions?.map(opt => new ServiceOption(opt)) || new Array<ServiceOption>();
             this.ServiceOptions.sort(sortBySortOrder);
         }
@@ -81,7 +83,7 @@ export class ServiceOptionDTO {
 
     constructor(option?: ServiceOption) {
         if (option) {
-            Object.assign(this, option);
+            copyPrimitives(this, option);
         }
     }
 }
@@ -92,7 +94,7 @@ export class ServiceOption extends ServiceOptionDTO {
         super();
 
         if (dto) {
-            Object.assign(this, dto)
+            copyPrimitives(this, dto)
         }
     }
 }
