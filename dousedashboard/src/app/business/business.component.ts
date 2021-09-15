@@ -9,6 +9,7 @@ import { BusinessService } from '../entities/business.service';
 import { BusinessVM } from '../entities/business';
 import { SaveDialogComponent } from '../shared/save-dialog/save-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-business',
@@ -19,6 +20,8 @@ export class BusinessComponent implements OnInit {
   business = new BusinessVM();
   ownerImage: SafeUrl;
   homeLogo: SafeUrl;
+  images = new Array<File>();
+  azureLocation = environment.azureLocation;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -45,8 +48,6 @@ export class BusinessComponent implements OnInit {
       ).subscribe((business: BusinessVM) => {
         if (business) {
           this.business = business;
-          this.homeLogo = this.sanitizer.bypassSecurityTrustUrl(this.business.HomeLogo);
-          this.ownerImage = this.sanitizer.bypassSecurityTrustUrl(this.business.EmployeeImg);
           this.snackBar.dismiss();
         }
       });
@@ -58,7 +59,7 @@ export class BusinessComponent implements OnInit {
   }
 
   sendSave(): Observable<BusinessVM> {
-    return this.businessService.save(this.business).pipe(
+    return this.businessService.save(this.business, this.images).pipe(
       catchError(error => {
         this.snackBar.open('Failed to save user data :(', '', {
           panelClass: ['error-snackbar']
@@ -99,15 +100,16 @@ export class BusinessComponent implements OnInit {
         const reader = new FileReader();
         reader.onload = e => {
           const blob = window.URL.createObjectURL(file);
+          this.images.push(file);
 
           switch (prop) {
             case 'owner':
               this.ownerImage = this.sanitizer.bypassSecurityTrustUrl(blob);
-              this.business.EmployeeImg = e.target.result.toString();
+              this.business.EmployeeImg = file.name;
               break;
             case 'logo':
               this.homeLogo = this.sanitizer.bypassSecurityTrustUrl(blob);
-              this.business.HomeLogo = e.target.result.toString();
+              this.business.HomeLogo = file.name;
               break;
           }
         };
@@ -121,5 +123,4 @@ export class BusinessComponent implements OnInit {
       }
     }
   }
-
 }

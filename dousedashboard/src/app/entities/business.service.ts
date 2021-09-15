@@ -13,9 +13,17 @@ export class BusinessService {
     business: BusinessVM;
     constructor(private http: HttpClient) { }
 
-    save(business: BusinessVM): Observable<BusinessVM> {
+    save(business: BusinessVM, files: Array<File>): Observable<BusinessVM> {
         this.business = business;
-        return this.http.put<BusinessVM>(`${environment.api}/business/${this.business.Id}`, this.convertToDTO(this.business));
+
+        const formData: FormData = new FormData();
+        formData.append('business', JSON.stringify(this.convertToDTO(business)));
+
+        for (const file of files) {
+            formData.append(file.name, file);
+        }
+
+        return this.http.put<BusinessVM>(`${environment.api}/business/${this.business.Id}`, formData);
     }
 
     get(id: string | number): Observable<BusinessVM> {

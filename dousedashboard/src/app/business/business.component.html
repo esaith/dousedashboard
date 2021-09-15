@@ -48,9 +48,11 @@
 
 <div class='prop'>Logo</div>
 <input type='file' accept="image/*" (change)="uploadImage($event, 'logo')" />
-<img *ngIf='homeLogo' [src]="homeLogo" class="image" />
+<img *ngIf='homeLogo' [src]="homeLogo" class="image new" />
+<img *ngIf='business.EmployeeImg && !homeLogo' [src]="azureLocation + business.EmployeeImg" class="image azure" />
 
 
 <div class='prop'>Owner Image</div>
 <input type='file' accept="image/*" (change)="uploadImage($event, 'owner')" />
-<img *ngIf='ownerImage' [src]="ownerImage" class="image" />
+<img *ngIf='ownerImage' [src]="ownerImage" class="image new" />
+<img *ngIf='business.HomeLogo && !ownerImage' [src]="azureLocation + business.HomeLogo" class="image azure" />

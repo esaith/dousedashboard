@@ -15,11 +15,9 @@ export class ServiceCategoryService {
 
     save(serviceCategories: Array<ServiceCategory>, businessId: number, files: Array<File>): Observable<ServiceCategory[]> {
         const dto = serviceCategories.map(x => new ServiceCategoryDTO(x));
-        const filesName = files.map(x => x.name);
 
         const formData: FormData = new FormData();
         formData.append('categories', JSON.stringify(dto));
-        formData.append('fileNames', JSON.stringify(filesName));
 
         for (const file of files) {
             formData.append(file.name, file);
